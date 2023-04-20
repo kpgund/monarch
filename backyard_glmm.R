@@ -1,4 +1,4 @@
-## generalized linear models to consider for backyard garden sampling - 
+## generalized linear mixed models to consider for backyard garden sampling - 
 
 ## load in needed libraries
 library(tidyverse)
@@ -79,7 +79,7 @@ egg.all.comm.glmm<-glmmTMB(
 summary(egg.all.comm.glmm) 
 
 
-egg.all.env <- EGG_TOT ~ SPECIES*HEIGHT + (1|LOCATION) + (1|WEEK)
+egg.all.env <- EGG_TOT ~ SPECIES*(HEIGHT) + (1|LOCATION) + (1|WEEK)
 egg.all.env.glmm <- glmmTMB(
   egg.all.env,
   data=backyard,
