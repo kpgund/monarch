@@ -59,7 +59,7 @@ backyard <- backyard  %>%
 # what effects EGG ABUNDANCE across ALL THREE SPECIES OF MILKWEED?
 # EGGS - ALL SPECIES ----
 ## global model 
-egg.all.global <- EGG_TOT ~ SPECIES + (HEIGHT.std + PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION/WEEK)
+egg.all.global <- EGG_TOT ~ SPECIES + (HEIGHT.std + PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION) + (1|WEEK)
 egg.all.global.glmm <- glmmTMB(
   egg.all.global,
   data = backyard,
@@ -70,7 +70,7 @@ summary(egg.all.global.glmm)
 # with SPECIESINCARNATA at the intercept
 
 
-egg.all.comm <- EGG_TOT ~ (PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION/WEEK)
+egg.all.comm <- EGG_TOT ~ (PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION) + (1|WEEK)
 egg.all.comm.glmm<-glmmTMB(
   egg.all.comm,
   data=backyard,
@@ -79,7 +79,7 @@ egg.all.comm.glmm<-glmmTMB(
 summary(egg.all.comm.glmm) 
 
 
-egg.all.env <- EGG_TOT ~ SPECIES + PHENOLOGY + (1|LOCATION/WEEK)
+egg.all.env <- EGG_TOT ~ SPECIES*HEIGHT + (1|LOCATION) + (1|WEEK)
 egg.all.env.glmm <- glmmTMB(
   egg.all.env,
   data=backyard,
@@ -108,33 +108,38 @@ tab_model(egg.all.global.glmm,
           show.re.var = F,
           show.ngroups = FALSE,
           show.obs = F,
-          pred.labels = c("(Intercept)",
-                          "A. syriaca",
-                          "A. tuberosa",
-                          "Height",
-                          "Predator total - without ants",
-                          "Ant total",
-                          "Aphis nerii",
-                          "Myzocallis asclepiadis",
-                          "A. Syriaca x Height",
-                          "A. Tuberosa x Height",
-                          "A. syriaca x Predator total - without ants",
-                          "A. tuberosa x Predator total - without ants",
-                          "A. syriaca x Ant total",
-                          "A. tuberosa x Ant total",
-                          "A. syriaca x Aphis nerii",
-                          "A. tuberosa x Aphis nerii",
-                          "A. syriaca x Myzocallis asclepiadis",
-                          "A. tuberosa x Myzocallis asclepiadis"),
+          pred.labels = c(
+            "(Intercept)",
+            "A. syriaca",
+            "A. tuberosa",
+            "Height",
+            "Predator total - without ants",
+            "Ant total",
+            "Aphis nerii",
+            "Myzocallis asclepiadis",
+            "A. syriaca x Height",
+            "A. tuberosa x Height",
+            "A. syriaca x Predator total - without ants",
+            "A. tuberosa x Predator total - without ants",
+            "A. syriaca x Ant total",
+            "A. tuberosa x Ant total",
+            "A. syriaca x Aphis nerii",
+            "A. tuberosa x Aphis nerii",
+            "A. syriaca x Myzocallis asclepiadis",
+            "A. tuberosa x Myzocallis asclepiadis"
+          ),
           dv.labels = " ",
           string.est = "Estimate",
           string.se = "SE",
           string.p = "p-value",
-          string.ci = "95% CI")
+          string.ci = "95% CI",
+          file = "datavis/egg-results.html"
+        )
+
 
 # LARVAE - ALL SPECIES ----
 ## global model 
-larv.all.global <- LARV_TOT ~ SPECIES + (HEIGHT.std + PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION/WEEK)
+larv.all.global <- LARV_TOT ~ SPECIES + (HEIGHT.std + PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION) + (1|WEEK)
 larv.all.global.glmm <- glmmTMB(
   larv.all.global,
   data = backyard,
@@ -145,7 +150,7 @@ summary(larv.all.global.glmm)
 # with SPECIESINCARNATA at the intercept
 
 
-larv.all.comm <- LARV_TOT ~ (PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION/WEEK)
+larv.all.comm <- LARV_TOT ~ (PRED_WOUT_ANT_TOT.std + ANT_TOT.std + APH_NER.std + MYZ_ASC.std)*SPECIES + (1|LOCATION) + (1|WEEK)
 larv.all.comm.glmm<-glmmTMB(
   larv.all.comm,
   data=backyard,
@@ -154,7 +159,7 @@ larv.all.comm.glmm<-glmmTMB(
 summary(larv.all.comm.glmm) 
 
 
-larv.all.env <- LARV_TOT ~ SPECIES + PHENOLOGY + (1|LOCATION/WEEK)
+larv.all.env <- LARV_TOT ~ SPECIES*HEIGHT + (1|LOCATION) + (1|WEEK)
 larv.all.env.glmm <- glmmTMB(
   larv.all.env,
   data=backyard,
@@ -172,9 +177,9 @@ plot(res.global, backyard$EGG_TOT)
 
 # eggs
 ## make a confidence interval
-backyard.larv.confint.df<-data.frame(confint(larv.all.global.glmm))
+backyard.larv.confint.df<-data.frame(confint(larv.all.comm.glmm))
 ## make an output
-tab_model(larv.all.global.glmm,
+tab_model(larv.all.comm.glmm,
           transform = NULL,
           show.se = TRUE,
           show.zeroinf = F,
@@ -184,15 +189,12 @@ tab_model(larv.all.global.glmm,
           show.ngroups = FALSE,
           show.obs = F,
           pred.labels = c("(Intercept)",
-                          "A. syriaca",
-                          "A. tuberosa",
-                          "Height",
                           "Predator total - without ants",
                           "Ant total",
                           "Aphis nerii",
                           "Myzocallis asclepiadis",
-                          "A. Syriaca x Height",
-                          "A. Tuberosa x Height",
+                          "A. Syriaca",
+                          "A. Tuberosa",
                           "A. syriaca x Predator total - without ants",
                           "A. tuberosa x Predator total - without ants",
                           "A. syriaca x Ant total",
@@ -205,4 +207,6 @@ tab_model(larv.all.global.glmm,
           string.est = "Estimate",
           string.se = "SE",
           string.p = "p-value",
-          string.ci = "95% CI")
+          string.ci = "95% CI",
+          file = "datavis/larvae-results.html"
+)
